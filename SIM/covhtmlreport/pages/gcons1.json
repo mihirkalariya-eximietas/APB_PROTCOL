@@ -1,0 +1,4 @@
+var g_db_data = [
+{dummy:0},
+{name:'cg_inst',f:1,type:6,id:766,tb:'220',h:'196',m:'24',hp:'89.09%',cov:['93.75%','G'],g:'100.00%',gp:['93.75%','G'],hdlPath:'/apb_env_pkg/apb_slv_monitor',parent:'765'}];
+processConsCovergroupsData(g_db_data);

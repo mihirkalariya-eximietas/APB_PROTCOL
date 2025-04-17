@@ -1,0 +1,3 @@
+var g_data = {'dummy':null,
+'1':'../ENV/APB_SLAVE_AGENT/apb_slv_mon.sv',
+'2':'../ENV/apb_env_pkg.sv'};
