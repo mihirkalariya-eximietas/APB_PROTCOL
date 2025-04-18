@@ -52,12 +52,14 @@ task apb_wr_nowait_rd_wait_test::run_phase(uvm_phase phase);
       uvm_test_done.drop_objection(this);
     end
     foreach (env_h.s_agnt_h[i]) begin
-    automatic int idx = i;  // Required to avoid loop variable issues in fork
-      fork
-        s_rd_wait_seq_h = apb_rd_wait_sequence::type_id::create($sformatf("s_rd_wait_seq_h[%0d]", idx));
-        s_rd_wait_seq_h.start(env_h.s_agnt_h[idx].s_sequencer_h);
-      join_none
-    end  
+      if(env_h.s_cfg_h[i].is_active==UVM_ACTIVE) begin
+        automatic int idx = i;  // Required to avoid loop variable issues in fork
+        fork
+          s_rd_wait_seq_h = apb_rd_wait_sequence::type_id::create($sformatf("s_rd_wait_seq_h[%0d]", idx));
+          s_rd_wait_seq_h.start(env_h.s_agnt_h[idx].s_sequencer_h);
+        join_none
+      end  
+    end
   join
 
 endtask

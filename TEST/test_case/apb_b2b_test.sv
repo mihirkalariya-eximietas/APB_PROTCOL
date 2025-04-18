@@ -34,7 +34,7 @@ task apb_b2b_test::run_phase(uvm_phase phase);
   m_b2b_seq_h = apb_b2b_sequence::type_id::create("m_b2b_seq_h");
   s_seq_h = apb_slv_sequence::type_id::create("s_seq_h");
   
-  void'(m_b2b_seq_h.randomize() with { m_b2b_seq_h.itr == 5; });
+  void'(m_b2b_seq_h.randomize() with { m_b2b_seq_h.itr == 25; });
   
   fork 
     begin
@@ -43,12 +43,14 @@ task apb_b2b_test::run_phase(uvm_phase phase);
 	 uvm_test_done.drop_objection(this);
     end
     foreach (env_h.s_agnt_h[i]) begin
-      automatic int idx = i;  // Required to avoid loop variable issues in fork
-      fork
-        s_seq_h = apb_slv_sequence::type_id::create($sformatf("s_seq_h[%0d]", idx));
-        s_seq_h.start(env_h.s_agnt_h[idx].s_sequencer_h);
-      join_none
-    end  
+      if(env_h.s_cfg_h[i].is_active==UVM_ACTIVE) begin
+        automatic int idx = i;  // Required to avoid loop variable issues in fork
+        fork
+          s_seq_h = apb_slv_sequence::type_id::create($sformatf("s_seq_h[%0d]", idx));
+          s_seq_h.start(env_h.s_agnt_h[idx].s_sequencer_h);
+        join_none
+      end  
+    end
   join
 endtask
 

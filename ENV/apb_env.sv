@@ -61,9 +61,9 @@ class apb_env extends uvm_env;
     foreach (s_cfg_h[i]) begin
 	 s_cfg_h[i] = apb_slv_config::type_id::create($sformatf("s_cfg_h[%0d]", i));
 	 if (i < 4)
-        m_cfg_h[i].is_active = UVM_ACTIVE;
+        s_cfg_h[i].is_active = UVM_ACTIVE;
       else
-        m_cfg_h[i].is_active = UVM_PASSIVE; // Active Slave Agent
+        s_cfg_h[i].is_active = UVM_PASSIVE; // Active Slave Agent
 	 s_agnt_h[i] = apb_slv_agent::type_id::create($sformatf("s_agnt_h[%0d]", i), this);
 	 uvm_config_db #(apb_slv_config)::set(this, $sformatf("s_agnt_h[%0d]*", i), "slv_config", s_cfg_h[i]);
     end
@@ -73,8 +73,10 @@ class apb_env extends uvm_env;
   function void connect_phase(uvm_phase phase);
     super.connect_phase(phase);
     m_agnt_h[0].m_mon_h.master_mon_port.connect(scr_h.master_mon_imp);
-    foreach(s_cfg_h[i]) begin
-      s_agnt_h[i].s_mon_h.slv_mon_port.connect(scr_h.slv_mon_imp);  
+    foreach (s_cfg_h[i]) begin
+      if (s_cfg_h[i].is_active == UVM_PASSIVE) begin
+        s_agnt_h[i].s_mon_h.slv_mon_port.connect(scr_h.slv_mon_imp);
+      end
     end
   endfunction
 

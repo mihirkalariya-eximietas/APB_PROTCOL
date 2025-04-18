@@ -22,26 +22,15 @@ interface apb_if(input PCLK);
   logic PSLVERR;
 
 
-  // Idle_to_setup Assertion
-//  property idle_to_setup_check;
-//    @(posedge PCLK)
-//      (!PSLEx && !PENABLE) ##1
-//      ($rose(PWRITE) || $fell(PWRITE)) |-> PSLEx;
-//  endproperty
-//
-//  assert property (idle_to_setup_check)
-//  else 
-//    $error("PSELx must be high when PWRITE toggles after idle.");
-//  
-//  //Pready_high_in_access
-//  property pready_during_access_phase;
-//    @(posedge PCLK)
-//    disable iff (!RESETn)
-//    PENABLE |-> ##[0:$] $rose(PREADY);
-//  endproperty
-//
-//  assert property (pready_during_access_phase)
-//  else $error("PREADY must go high at least once during the access phase when PENABLE is high.");
+  //Pready_high_in_access
+  property pready_during_access_phase;
+    @(posedge PCLK)
+    disable iff (!RESETn)
+    PENABLE |-> ##[0:$] $rose(PREADY);
+  endproperty
+
+  assert property (pready_during_access_phase)
+  else $error("PREADY must go high at least once during the access phase when PENABLE is high.");
 
 endinterface
 

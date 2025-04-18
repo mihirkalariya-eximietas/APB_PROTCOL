@@ -10,7 +10,7 @@ class apb_env_config extends uvm_object;
 
   // To set No of apb Master Agent
   int no_of_master_agents = 1;
-  int no_of_slave_agents= 4;
+  int no_of_slave_agents= 8;
 
   // Factory Registration
   `uvm_object_utils_begin(apb_env_config)

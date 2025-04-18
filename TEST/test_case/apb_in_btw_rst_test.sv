@@ -35,18 +35,20 @@ task apb_ibr_test::run_phase(uvm_phase phase);
   
   void'(r_seq_h.randomize() with { r_seq_h.itr == 20; });
   
-  fork begin
-    uvm_test_done.raise_objection(this);
-    r_seq_h.start(env_h.m_agnt_h[0].m_sequencer_h);  
-    //#10;
-    uvm_test_done.drop_objection(this);
-  end
-  foreach (env_h.s_agnt_h[i]) begin
-      automatic int idx = i;  // Required to avoid loop variable issues in fork
-      fork
-        s_seq_h = apb_slv_sequence::type_id::create($sformatf("s_seq_h[%0d]", idx));
-        s_seq_h.start(env_h.s_agnt_h[idx].s_sequencer_h);
-      join_none
+  fork 
+    begin
+      uvm_test_done.raise_objection(this);
+      r_seq_h.start(env_h.m_agnt_h[0].m_sequencer_h);  
+      uvm_test_done.drop_objection(this);
+    end
+    foreach (env_h.s_agnt_h[i]) begin
+      if(env_h.s_cfg_h[i].is_active==UVM_ACTIVE) begin
+        automatic int idx = i;  // Required to avoid loop variable issues in fork
+        fork
+          s_seq_h = apb_slv_sequence::type_id::create($sformatf("s_seq_h[%0d]", idx));
+          s_seq_h.start(env_h.s_agnt_h[idx].s_sequencer_h);
+        join_none
+      end
     end
   join
 

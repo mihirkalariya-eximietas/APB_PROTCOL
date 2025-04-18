@@ -19,7 +19,7 @@ module apb_tb_top();
  
   // Interface instance
   apb_if m_vif(clk);
-  apb_if s_vif[4](clk);
+  apb_if s_vif[8](clk);
   
  // Interconnect signals
   logic [3:0] psel;
@@ -60,7 +60,7 @@ module apb_tb_top();
       assign prdata_slv[i]    = s_vif[i].PRDATA;
       assign pslverr_slv[i]   = s_vif[i].PSLVERR;
 
-      // Drive master signals into each slave
+      // Drive master signals into each active slave
       assign s_vif[i].PADDR   = m_vif.PADDR;
       assign s_vif[i].PWRITE  = m_vif.PWRITE;
       assign s_vif[i].PWDATA  = m_vif.PWDATA;
@@ -70,6 +70,26 @@ module apb_tb_top();
       assign s_vif[i].RESETn  = m_vif.RESETn;
     end
   endgenerate 
+  
+  // connect passive slave signals
+  genvar j;
+  generate
+    for (j = 4; j < 8; j++) begin
+      assign s_vif[j].PSLEx    = psel[j-4];        
+      assign s_vif[j].PREADY   = s_vif[j-4].PREADY;
+      assign s_vif[j].PRDATA   = s_vif[j-4].PRDATA;
+      assign s_vif[j].PSLVERR  = s_vif[j-4].PSLVERR;
+  
+      assign s_vif[j].PADDR    = m_vif.PADDR;
+      assign s_vif[j].PWRITE   = m_vif.PWRITE;
+      assign s_vif[j].PWDATA   = m_vif.PWDATA;
+      assign s_vif[j].PENABLE  = m_vif.PENABLE;
+      assign s_vif[j].PSTRB    = m_vif.PSTRB;
+      assign s_vif[j].PCLK     = m_vif.PCLK;
+      assign s_vif[j].RESETn   = m_vif.RESETn;
+    end
+  endgenerate
+
 
   // Reset assert task
   task reset_assert();
@@ -91,19 +111,24 @@ module apb_tb_top();
     uvm_config_db#(virtual apb_if)::set(null, "uvm_test_top.env_h.s_agnt_h[1]", "s_vif", s_vif[1]);
     uvm_config_db#(virtual apb_if)::set(null, "uvm_test_top.env_h.s_agnt_h[2]", "s_vif", s_vif[2]);
     uvm_config_db#(virtual apb_if)::set(null, "uvm_test_top.env_h.s_agnt_h[3]", "s_vif", s_vif[3]);
+
+    uvm_config_db#(virtual apb_if)::set(null, "uvm_test_top.env_h.s_agnt_h[4]", "s_vif", s_vif[4]);
+    uvm_config_db#(virtual apb_if)::set(null, "uvm_test_top.env_h.s_agnt_h[5]", "s_vif", s_vif[5]);
+    uvm_config_db#(virtual apb_if)::set(null, "uvm_test_top.env_h.s_agnt_h[6]", "s_vif", s_vif[6]);
+    uvm_config_db#(virtual apb_if)::set(null, "uvm_test_top.env_h.s_agnt_h[7]", "s_vif", s_vif[7]);
   end
 
   // UVM Configuration and Test Run
   initial begin
     uvm_top.set_report_verbosity_level(UVM_NONE);
-    run_test("apb_wr_rd_no_wait_test");
+    //run_test("apb_wr_rd_no_wait_test");
     //run_test("apb_wr_rd_wait_test");
     //run_test("apb_b2b_test");
     //run_test("apb_random_test");
     //run_test("apb_ibr_test");
     //run_test("apb_pslverr_test");
     //run_test("apb_wr_nowait_rd_wait_test");
-    //run_test("apb_wr_wait_rd_nowait_test");
+    run_test("apb_wr_wait_rd_nowait_test");
   end
  
 endmodule
